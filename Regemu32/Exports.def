@@ -1,0 +1,14 @@
+LIBRARY	"Regemu32.dll"
+
+EXPORTS
+		DllMain
+		RegCloseKey         @1561
+		RegConnectRegistryA @1562
+		RegCreateKeyA       @1568
+		RegCreateKeyExA     @1569
+		RegOpenKeyA         @1608
+		RegOpenKeyExA       @1609
+		RegQueryValueA      @1621
+		RegQueryValueExA    @1622
+		RegSetValueA        @1637
+		RegSetValueExA      @1638
