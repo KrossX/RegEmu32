@@ -76,7 +76,6 @@
   <ItemGroup>
     <ClInclude Include="Advapi_Stuff.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Patcher.rc" />

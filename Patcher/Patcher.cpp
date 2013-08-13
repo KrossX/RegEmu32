@@ -58,10 +58,10 @@ static size_t FindString(char *buffer, char *str, size_t sizebuf, size_t size_st
 
 static void CheapWide(char *str, wchar_t *out, size_t length)
 {
-	memset(out, 0, length);
-	
 	char *cbuf = (char*)out;
 
+	memset(cbuf, 0, length * 2);
+	
 	size_t str_len = strlen(str);
 
 	for(size_t i = 0; i < str_len; i++)
@@ -74,7 +74,7 @@ int CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	
 	vector<int> functionlist;
 	
-	wchar_t message[2048];
+	wstring message;
 	int msg = 0;
 
 	wstring filename(lpCmdLine);
@@ -127,13 +127,13 @@ int CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 			}
 		}
 
-		swprintf_s(message, L"%s\n", Patcher_Message[msg]);
+		message = wstring(Patcher_Message[msg]).append(L"\n\n");
 
 		for each(int func in functionlist)
 		{
-			wchar_t buff[128]; 
-			CheapWide(Advapi_Function[func], buff, 128);
-			swprintf_s(message, L"%s\n%s \t[%s]", message, buff, Advapi_Support[func] ? L"o" : L"x");
+			wchar_t buff[64]; 
+			CheapWide(Advapi_Function[func], buff, 64);
+			message.append(buff).append(Advapi_Support[func] ? L"\t[o]" : L"\t[x]").append(L"\n");
 		}
 
 		delete[] buffer;
@@ -141,10 +141,10 @@ int CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 	}
 	else
 	{
-		swprintf_s(message, L"Could not open file:\n%s", filename.c_str());
+		message = wstring(L"Could not open file: ").append(filename.c_str()).append(L"\n");
 	}
 	
-	MessageBoxW(NULL, message, L"Command line", MB_OK);
+	MessageBoxW(NULL, message.c_str(), L"Command line", MB_OK);
 
 	return EXIT_SUCCESS;
 }
