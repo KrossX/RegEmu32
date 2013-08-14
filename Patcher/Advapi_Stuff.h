@@ -1400,8 +1400,8 @@ false,	// RegConnectRegistryExW
 false,	// RegConnectRegistryW
 false,	// RegCopyTreeA
 false,	// RegCopyTreeW
-false,	// RegCreateKeyA
-false,	// RegCreateKeyExA
+true,	// RegCreateKeyA
+true,	// RegCreateKeyExA
 false,	// RegCreateKeyExW
 false,	// RegCreateKeyTransactedA
 false,	// RegCreateKeyTransactedW
@@ -1441,7 +1441,7 @@ false,	// RegLoadMUIStringW
 false,	// RegNotifyChangeKeyValue
 false,	// RegOpenCurrentUser
 true,	// RegOpenKeyA
-false,	// RegOpenKeyExA
+true,	// RegOpenKeyExA
 false,	// RegOpenKeyExW
 false,	// RegOpenKeyTransactedA
 false,	// RegOpenKeyTransactedW

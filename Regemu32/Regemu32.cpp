@@ -23,7 +23,7 @@
 HINSTANCE g_hinstDLL = NULL;
 RegistryWrapper reg;
 
-#define _ENABLE_LOGFILE
+//#define _ENABLE_LOGFILE
 
 #ifdef _ENABLE_LOGFILE
 	FILE *logfile = NULL;
@@ -31,7 +31,6 @@ RegistryWrapper reg;
 #else
 	#define LOG2FILE(...)
 #endif
-
 
 
 wchar_t fullnameINIw[MAX_PATH];
@@ -91,48 +90,79 @@ extern "C" BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpRe
 	return result;
 }
 
+char *KeyString[] =
+{
+	"HKEY_CLASSES_ROOT",
+	"HKEY_CURRENT_USER",
+	"HKEY_LOCAL_MACHINE",
+	"HKEY_USERS",
+	"HKEY_PERFORMANCE_DATA",
+	"HKEY_CURRENT_CONFIG",
+	"HKEY_DYN_DATA",
+	"HKEY_CURRENT_USER_LOCAL_SETTINGS",
+	"HKEY_PERFORMANCE_TEXT",
+	"HKEY_PERFORMANCE_NLSTEXT",
+	""
+};
+
 char* GetKeyString(HKEY key)
 {
 	switch((DWORD)key)
 	{
-	case 0x80000000: return "HKEY_CLASSES_ROOT";
-	case 0x80000001: return "HKEY_CURRENT_USER";
-	case 0x80000002: return "HKEY_LOCAL_MACHINE";
-	case 0x80000003: return "HKEY_USERS";
-	case 0x80000004: return "HKEY_PERFORMANCE_DATA";
-	case 0x80000005: return "HKEY_CURRENT_CONFIG";
-	case 0x80000006: return "HKEY_DYN_DATA";
-	case 0x80000007: return "HKEY_CURRENT_USER_LOCAL_SETTINGS";
-	case 0x80000050: return "HKEY_PERFORMANCE_TEXT";
-	case 0x80000060: return "HKEY_PERFORMANCE_NLSTEXT";
-	default: return "";
+	case 0x80000000: return KeyString[0x00];
+	case 0x80000001: return KeyString[0x01];
+	case 0x80000002: return KeyString[0x02];
+	case 0x80000003: return KeyString[0x03];
+	case 0x80000004: return KeyString[0x04];
+	case 0x80000005: return KeyString[0x05];
+	case 0x80000006: return KeyString[0x06];
+	case 0x80000007: return KeyString[0x07];
+	case 0x80000050: return KeyString[0x08];
+	case 0x80000060: return KeyString[0x09];
+	default:		 return KeyString[0x0A];;
 	}
 }
+
+char *TypeString[] = 
+{
+	"REG_NONE",
+	"REG_SZ",
+	"REG_EXPAND_SZ",
+	"REG_BINARY",
+	"REG_DWORD_LITTLE_ENDIAN",
+	"REG_DWORD_BIG_ENDIAN",
+	"REG_LINK",
+	"REG_MULTI_SZ",
+	"REG_RESOURCE_LIST",
+	"REG_FULL_RESOURCE_DESCRIPTOR",
+	"REG_RESOURCE_REQUIREMENTS_LIST",
+	"REG_QWORD_LITTLE_ENDIAN",
+	""
+};
 
 char *GetTypeString(DWORD type)
 {
 	switch(type)
 	{
-	case 0x00: return "REG_NONE";
-	case 0x01: return "REG_SZ";
-	case 0x02: return "REG_EXPAND_SZ";
-	case 0x03: return "REG_BINARY";
-	case 0x04: return "REG_DWORD_LITTLE_ENDIAN";
-	case 0x05: return "REG_DWORD_BIG_ENDIAN";
-	case 0x06: return "REG_LINK";
-	case 0x07: return "REG_MULTI_SZ";
-	case 0x08: return "REG_RESOURCE_LIST";
-	case 0x09: return "REG_FULL_RESOURCE_DESCRIPTOR";
-	case 0x0A: return "REG_RESOURCE_REQUIREMENTS_LIST";
-	case 0x0B: return "REG_QWORD_LITTLE_ENDIAN";
-	default: return "";
+	case 0x00:	return TypeString[0x00];
+	case 0x01:	return TypeString[0x01];
+	case 0x02:	return TypeString[0x02];
+	case 0x03:	return TypeString[0x03];
+	case 0x04:	return TypeString[0x04];
+	case 0x05:	return TypeString[0x05];
+	case 0x06:	return TypeString[0x06];
+	case 0x07:	return TypeString[0x07];
+	case 0x08:	return TypeString[0x08];
+	case 0x09:	return TypeString[0x09];
+	case 0x0A:	return TypeString[0x0A];
+	case 0x0B:	return TypeString[0x0B];
+	default:	return TypeString[0x0C];;
 	}
 }
 
-
 struct REGKEY
 {
-	char key[256];
+	std::string key, subkey;
 	DWORD type;
 	void *self;
 };
@@ -170,13 +200,12 @@ LONG RegistryWrapper::ConnectRegistryA(LPCSTR lpMachineName, HKEY hKey, PHKEY ph
 {
 	REGKEY *rkey = new REGKEY();
 
-	sprintf_s(rkey->key, "%s", GetKeyString(hKey));
-
+	rkey->key = std::string(GetKeyString(hKey));
 	rkey->self = rkey;
 
 	*phkResult = (HKEY)rkey;
 
-	//LOG2FILE(logfile, "%s: %s, %s (%08X)\n", __FUNCTION__, lpMachineName, GetKeyString(hKey), *phkResult);
+	//LOG2FILE(logfile, "%s: %s, %s (%08X)\n", __FUNCTION__, lpMachineName, rkey->key.c_str(), *phkResult);
 
 	return ERROR_SUCCESS;
 }
@@ -184,29 +213,35 @@ LONG RegistryWrapper::ConnectRegistryA(LPCSTR lpMachineName, HKEY hKey, PHKEY ph
 LONG RegistryWrapper::CreateKeyA(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 {
 	LOG2FILE(logfile, "%s\n", __FUNCTION__);
-	return -1;
+	return OpenKeyA(hKey, lpSubKey, phkResult);
 }
 
 LONG RegistryWrapper::CreateKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass, DWORD dwOptions, REGSAM samDesired, LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
 {
 	LOG2FILE(logfile, "%s\n", __FUNCTION__);
-	return -1;
+
+	if(lpdwDisposition) *lpdwDisposition = REG_CREATED_NEW_KEY;//REG_OPENED_EXISTING_KEY REG_CREATED_NEW_KEY
+
+	return CreateKeyA(hKey, lpSubKey, phkResult);
 }
 
 LONG RegistryWrapper::OpenKeyA(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 {
+	DWORD keytest = (DWORD)hKey;
+
+	if(keytest == (0x80000007 & keytest))
+		ConnectRegistryA(NULL, hKey, &hKey);
+
 	REGKEY *keyin = (REGKEY*)hKey;
 	
-
 	bool good = IsGoodKey(hKey);
 
 	if(good)
 	{
 		REGKEY *keyout = new REGKEY();
-
-		sprintf_s(keyout->key, "%s\\%s", keyin->key, lpSubKey);
-
-		keyout->self = keyout;
+		keyout->key    = keyin->key;
+		keyout->subkey = std::string(lpSubKey);
+		keyout->self   = keyout;
 
 		*phkResult = (HKEY)keyout;
 	}
@@ -219,7 +254,7 @@ LONG RegistryWrapper::OpenKeyA(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 LONG RegistryWrapper::OpenKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 {
 	LOG2FILE(logfile, "%s\n", __FUNCTION__);
-	return -1;
+	return OpenKeyA(hKey, lpSubKey, phkResult);
 }
 
 LONG RegistryWrapper::QueryValueA(HKEY hKey, LPCSTR lpSubKey, LPSTR lpValue, PLONG lpcbValue)
@@ -236,37 +271,39 @@ LONG RegistryWrapper::QueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpRes
 
 	if(good)
 	{
-		char *value_new = NULL;
+		std::string value_new("(default)");
 		size_t value_len = lpValueName? strlen(lpValueName) : 0;
 
 		if(value_len > 0)
-		{
-			value_len += 4;
-			value_new = new char[value_len];
-			sprintf_s(value_new, value_len, "\"%s\"", lpValueName);
-		}
-		else
-		{
-			value_new = new char[10];
-			sprintf_s(value_new, 10, "(default)");
-		}
+			value_new = std::string("\"").append(lpValueName).append("\"");
 
 		size_t buffer_len = lpcbData? (*lpcbData * 3 + 6) : 512;
 		char* buffer = new char[buffer_len];
 
-		DWORD length = GetPrivateProfileStringA(key->key, value_new, "", buffer, buffer_len, fullnameINIa);
+		std::string section(key->key);
+		section.append("\\").append(key->subkey);
+		
+		DWORD length = GetPrivateProfileStringA(section.c_str(), value_new.c_str(), "", buffer, buffer_len, fullnameINIa);
 		good = GetLastError() == ERROR_SUCCESS;
 
 		if(good && lpData && lpcbData && *lpcbData > 0)
 		{
-			strcpy_s((char*)lpData, *lpcbData, buffer);
-			*lpcbData = strlen((char*)lpData);
+			
+			if(strncmp(buffer, "dword:", 6) == 0) // REG_DWORD_LITTLE_ENDIAN
+			{
+				DWORD data = strtol(&buffer[6], NULL, 16);
+				memcpy(lpData, &data, 4);
+			}
+			else // REG_SZ
+			{
+				strcpy_s((char*)lpData, *lpcbData, buffer);
+				*lpcbData = strlen((char*)lpData);
+			}
 		}
 
 		if(lpType) *lpType = 0x02;
 
 		if(buffer) delete[] buffer;
-		if(value_new) delete[] value_new;
 	}
 
 	LOG2FILE(logfile, "%s: %08X, %s, %08X, %08X, %08X\n", __FUNCTION__, hKey, lpValueName, lpType, lpData, lpcbData ? *lpcbData : 0);
@@ -286,22 +323,14 @@ LONG RegistryWrapper::SetValueExA(HKEY hKey, LPCSTR lpValueName, DWORD Reserved,
 
 	if(good)
 	{
-		char *value_new = NULL;
-		char *data_new = NULL;
-
+		std::string value_new("(default)");
+		
 		size_t value_len = lpValueName ? strlen(lpValueName) : 0;
 
 		if(value_len > 0)
-		{
-			value_len += 4;
-			value_new = new char[value_len];
-			sprintf_s(value_new, value_len, "\"%s\"", lpValueName);
-		}
-		else
-		{
-			value_new = new char[10];
-			sprintf_s(value_new, 10, "(default)");
-		}
+			value_new = std::string("\"").append(lpValueName).append("\"");
+
+		char *data_new = NULL;
 
 		if(cbData && lpData)
 		{
@@ -315,7 +344,13 @@ LONG RegistryWrapper::SetValueExA(HKEY hKey, LPCSTR lpValueName, DWORD Reserved,
 
 			case 0x02: //REG_EXPAND_SZ
 			case 0x03: //REG_BINARY
+				break;
+
 			case 0x04: //REG_DWORD_LITTLE_ENDIAN
+				data_new = new char[15];
+				sprintf_s(data_new, 15, "dword:%08X", *(DWORD*)lpData);
+				break;
+
 			case 0x05: //REG_DWORD_BIG_ENDIAN
 			case 0x06: //REG_LINK
 			case 0x07: //REG_MULTI_SZ
@@ -327,10 +362,12 @@ LONG RegistryWrapper::SetValueExA(HKEY hKey, LPCSTR lpValueName, DWORD Reserved,
 			}
 		}
 
-		WritePrivateProfileStringA(key->key, value_new, data_new, fullnameINIa);
+		std::string section(key->key);
+		section.append("\\").append(key->subkey);
+
+		WritePrivateProfileStringA(section.c_str(), value_new.c_str(), data_new, fullnameINIa);
 
 		if(data_new) delete[] data_new;
-		if(value_new) delete[] value_new;
 	}
 
 	LOG2FILE(logfile, "%s: %08X, %s, %s, %08X, %08X\n", __FUNCTION__, hKey, lpValueName, GetTypeString(dwType), lpData, cbData);
