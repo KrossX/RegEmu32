@@ -218,11 +218,41 @@ LONG RegistryWrapper::CreateKeyA(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 
 LONG RegistryWrapper::CreateKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass, DWORD dwOptions, REGSAM samDesired, LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
 {
-	LOG2FILE(logfile, "%s\n", __FUNCTION__);
+	LOG2FILE(logfile, "%s\n", __FUNCTION__, lpdwDisposition);
 
-	if(lpdwDisposition) *lpdwDisposition = REG_CREATED_NEW_KEY;//REG_OPENED_EXISTING_KEY REG_CREATED_NEW_KEY
+	LONG result = CreateKeyA(hKey, lpSubKey, phkResult);
+	bool isNewKey = true;
 
-	return CreateKeyA(hKey, lpSubKey, phkResult);
+	if(result == ERROR_SUCCESS)
+	{
+		REGKEY *key = (REGKEY*)*phkResult;
+
+		std::string section(key->key);
+		section.append("\\").append(key->subkey);
+
+		FILE *ini = NULL;
+		fopen_s(&ini, fullnameINIa, "r");
+
+		if(ini)
+		{
+			char linebuffer[256];
+
+			while(!feof(ini) && isNewKey)
+			{
+				fgets(linebuffer, 256, ini);
+
+				if(linebuffer[0] == '[')
+					isNewKey = !!strncmp(&linebuffer[1], section.c_str(), section.length());
+			}
+
+			fclose(ini);
+		}
+	}
+
+	if(lpdwDisposition)
+		*lpdwDisposition = isNewKey ? REG_CREATED_NEW_KEY : REG_OPENED_EXISTING_KEY;
+
+	return result;
 }
 
 LONG RegistryWrapper::OpenKeyA(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
@@ -267,10 +297,11 @@ LONG RegistryWrapper::QueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpRes
 {
 	REGKEY *key = (REGKEY*)hKey;
 	bool good = IsGoodKey(hKey);
-	
 
 	if(good)
 	{
+		DWORD type = 0;
+
 		std::string value_new("(default)");
 		size_t value_len = lpValueName? strlen(lpValueName) : 0;
 
@@ -293,16 +324,17 @@ LONG RegistryWrapper::QueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpRes
 			{
 				DWORD data = strtol(&buffer[6], NULL, 16);
 				memcpy(lpData, &data, 4);
+				type = 0x04;
 			}
 			else // REG_SZ
 			{
 				strcpy_s((char*)lpData, *lpcbData, buffer);
 				*lpcbData = strlen((char*)lpData);
+				type = 0x01;
 			}
 		}
 
-		if(lpType) *lpType = 0x02;
-
+		if(lpType) *lpType = type;
 		if(buffer) delete[] buffer;
 	}
 
