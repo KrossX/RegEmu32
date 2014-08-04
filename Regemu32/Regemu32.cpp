@@ -191,8 +191,7 @@ LONG RegistryWrapper::CloseKey(HKEY hKey)
 		rk = NULL;
 	}
 
-	//LOG2FILE(logfile, "%s: %08X | %s\n", __FUNCTION__, hKey, good? "Good" : "Bad");
-	
+	LOG2FILE(logfile, "%s: %08X | %s\n", __FUNCTION__, hKey, good? "Good" : "Bad");
 	return good? ERROR_SUCCESS : -1;
 }
 
@@ -268,22 +267,31 @@ LONG RegistryWrapper::OpenKeyA(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 
 	if(good)
 	{
-		REGKEY *keyout = new REGKEY();
-		keyout->key    = keyin->key;
-		keyout->subkey = std::string(lpSubKey);
-		keyout->self   = keyout;
+		if (lpSubKey && !(*lpSubKey))
+		{
+			*phkResult = hKey;
+		}
+		else
+		{
+			REGKEY *keyout = new REGKEY();
+			keyout->key = keyin->key;
+			keyout->subkey = keyin->subkey;
+			keyout->self = keyout;
 
-		*phkResult = (HKEY)keyout;
+			if (lpSubKey)
+				keyout->subkey.append("\\").append(lpSubKey);
+
+			*phkResult = (HKEY)keyout;
+		}
 	}
 
-	//LOG2FILE(logfile, "%s: %08X, %s (%08X)\n", __FUNCTION__, hKey, lpSubKey, *phkResult);
-
+	LOG2FILE(logfile, "%s: %08X, %s (%08X)\n", __FUNCTION__, hKey, lpSubKey, *phkResult);
 	return good? ERROR_SUCCESS : -1;
 }
 
 LONG RegistryWrapper::OpenKeyExA(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 {
-	LOG2FILE(logfile, "%s\n", __FUNCTION__);
+	//LOG2FILE(logfile, "%s\n", __FUNCTION__);
 	return OpenKeyA(hKey, lpSubKey, phkResult);
 }
 
@@ -312,10 +320,16 @@ LONG RegistryWrapper::QueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpRes
 		char* buffer = new char[buffer_len];
 
 		std::string section(key->key);
-		section.append("\\").append(key->subkey);
+
+		if (key->subkey[0] == '\\')
+			section.append(key->subkey);
+		else
+			section.append("\\").append(key->subkey);
 		
 		DWORD length = GetPrivateProfileStringA(section.c_str(), value_new.c_str(), "", buffer, buffer_len, fullnameINIa);
 		good = GetLastError() == ERROR_SUCCESS;
+
+		LOG2FILE(logfile, "%s: %s || %s || %s\n", __FUNCTION__, section.c_str(), value_new.c_str(), fullnameINIa);
 
 		if(good && lpData && lpcbData && *lpcbData > 0)
 		{
@@ -338,7 +352,7 @@ LONG RegistryWrapper::QueryValueExA(HKEY hKey, LPCSTR lpValueName, LPDWORD lpRes
 		if(buffer) delete[] buffer;
 	}
 
-	LOG2FILE(logfile, "%s: %08X, %s, %08X, %08X, %08X\n", __FUNCTION__, hKey, lpValueName, lpType, lpData, lpcbData ? *lpcbData : 0);
+	LOG2FILE(logfile, "%s: %08X, %s, %08X, %08X, %08X | %s\n", __FUNCTION__, hKey, lpValueName, lpType ? *lpType : 0, lpData, lpcbData ? *lpcbData : 0, good? "Good" : "Bad");
 	return good? ERROR_SUCCESS : ERROR_FILE_NOT_FOUND;
 }
 
