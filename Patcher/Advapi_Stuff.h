@@ -1,19 +1,6 @@
-/*  RegEmu32 - Registry Operations on INI for Emulators
- *  Copyright (C) 2013  KrossX
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+/* Copyright (c) 2013 KrossX <krossx@live.com>
+* License: http://www.opensource.org/licenses/mit-license.html  MIT License
+*/
 
 #pragma once
 
@@ -1402,7 +1389,7 @@ false,	// RegCopyTreeA
 false,	// RegCopyTreeW
 true,	// RegCreateKeyA
 true,	// RegCreateKeyExA
-false,	// RegCreateKeyExW
+true,	// RegCreateKeyExW
 false,	// RegCreateKeyTransactedA
 false,	// RegCreateKeyTransactedW
 false,	// RegCreateKeyW
@@ -1428,7 +1415,7 @@ false,	// RegEnumKeyExW
 false,	// RegEnumKeyW
 false,	// RegEnumValueA
 false,	// RegEnumValueW
-false,	// RegFlushKey
+true,	// RegFlushKey
 false,	// RegGetKeySecurity
 false,	// RegGetValueA
 false,	// RegGetValueW
@@ -1471,7 +1458,7 @@ false,	// RegSetKeyValueA
 false,	// RegSetKeyValueW
 false,	// RegSetValueA
 true,	// RegSetValueExA
-false,	// RegSetValueExW
+true,	// RegSetValueExW
 false,	// RegSetValueW
 false,	// RegUnLoadKeyA
 false,	// RegUnLoadKeyW

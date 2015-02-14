@@ -1,19 +1,6 @@
-/*  RegEmu32 - Registry Operations on INI for Emulators
- *  Copyright (C) 2013  KrossX
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+/* Copyright (c) 2013 KrossX <krossx@live.com>
+* License: http://www.opensource.org/licenses/mit-license.html  MIT License
+*/
 
 #include <Windows.h>
 #include <iostream>
@@ -22,31 +9,26 @@
 
 #include "Advapi_Stuff.h"
 
-wchar_t *Patcher_Message[] = 
+
+static void find_all(char *buffer, char *str, size_t sizebuf, size_t size_str, std::vector<size_t> &pos)
 {
-	L"ADVAPI not found.",
-	L"ADVAPI found, but unsupported. =(",
-	L"ADVAPI found and patched! =]",
-	L"REGEMU found, uninstalled."
-};
+	sizebuf -= size_str;
 
-enum
-{
-	MSG_NOT_FOUND = 0,
-	MSG_FOUND_UNSUPPORTED,
-	MSG_FOUND_PATCHED,
-	MSG_UNINSTALLED
-};
+	for (size_t i = 0; i < sizebuf; i++)
+	{
+		if (!_strnicmp(&buffer[i], str, size_str))
+			pos.push_back(i);
+	}
+}
 
-
-static size_t FindString(char *buffer, char *str, size_t sizebuf, size_t size_str)
+static size_t find_single(char *buffer, char *str, size_t sizebuf, size_t size_str)
 {
 	sizebuf -= size_str;
 	size_t pos = 0;
-	
-	for(size_t i = 0; i < sizebuf; i++)
+
+	for (size_t i = 0; i < sizebuf; i++)
 	{
-		if(!strncmp(&buffer[i], str, size_str))
+		if (!strncmp(&buffer[i], str, size_str))
 		{
 			pos = i;
 			break;
@@ -55,6 +37,7 @@ static size_t FindString(char *buffer, char *str, size_t sizebuf, size_t size_st
 
 	return pos;
 }
+
 
 static void CheapWide(char *str, wchar_t *out, size_t length)
 {
@@ -68,39 +51,47 @@ static void CheapWide(char *str, wchar_t *out, size_t length)
 		cbuf[i*2] = str[i];
 }
 
-int CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+int wmain(int argc, wchar_t* argv[])
 {
-	using namespace std;
+	if (argc < 2)
+	{
+		wprintf(L"Regemu Patcher usage:\n\n");
+		wprintf(L"\tREGEMU32 file\n\n");
+		wprintf(L"Replaces \"ADVAPI32\" with \"REGEMU32\" in FILE, and vice-versa.\n");
+		return ERROR_SUCCESS;
+	}
 	
-	vector<int> functionlist;
-	
-	wstring message;
-	int msg = 0;
+	bool fullcheck = false;
+	std::vector<int> functionlist;
 
-	wstring filename(lpCmdLine);
+	
+	std::wstring filename(argv[1]);
 	if(filename[0] == L'"') filename = filename.substr(1, filename.find_last_of(L'"') - 1);
 
-	fstream file(filename, ios::in | ios::out | ios::binary | ios::ate);
+	std::fstream file(filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::ate);
 
 	if(file.is_open())
 	{
+		wprintf(L"%s: ", filename.c_str());
+
 		size_t size = static_cast<size_t>(file.tellg());
 		char *buffer = new char[size];
 
-		file.seekg(0, ios::beg);
+		file.seekg(0, std::ios::beg);
 		file.read(buffer, size);
 
-		size_t advapi_pos = FindString(buffer, "ADVAPI32", size, 8);
+		std::vector<size_t> advapi;
+		find_all(buffer, "ADVAPI32", size, 8, advapi);
 
 		bool supported = true;
 
-		if(advapi_pos)
+		if (!advapi.empty())
 		{
-			for(int i = 0; i < 806; i++)
+			if (fullcheck) for(int i = 0; i < 806; i++)
 			{
 				size_t func_len = strlen(Advapi_Function[i]);
 
-				if(FindString(buffer, Advapi_Function[i], size, func_len))
+				if(find_single(buffer, Advapi_Function[i], size, func_len))
 				{
 					functionlist.push_back(i);
 					supported = supported && Advapi_Support[i];
@@ -109,42 +100,50 @@ int CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmd
 
 			if(supported)
 			{
-				file.seekg(advapi_pos, ios::beg);
-				file.write("REGEMU32", 8);
+				for (size_t pos : advapi)
+				{
+					file.seekg(pos, std::ios::beg);
+					file.write("REGEMU32", 8);
+				}
 			}
 
-			msg = supported? MSG_FOUND_PATCHED : MSG_FOUND_UNSUPPORTED;
+			wprintf(L"ADVAPI32 found (%d) and patched.\n", advapi.size());
 		}
 		else
 		{
-			size_t regemu_pos = FindString(buffer, "REGEMU32", size, 8);
+			std::vector<size_t> regemu;
+			find_all(buffer, "REGEMU32", size, 8, regemu);
 
-			if(regemu_pos)
+			if (!regemu.empty()) 
 			{
-				file.seekg(regemu_pos, ios::beg);
-				file.write("ADVAPI32", 8);
-				msg = MSG_UNINSTALLED;
+				for (size_t pos : regemu)
+				{
+					file.seekg(pos, std::ios::beg);
+					file.write("ADVAPI32", 8);
+				}
+
+				wprintf(L"REGEMU32 found (%d) and unpatched.\n", regemu.size());
+			}
+			else
+			{
+				wprintf(L"Nothing found on file.\n");
 			}
 		}
 
-		message = wstring(Patcher_Message[msg]).append(L"\n\n");
-
-		for each(int func in functionlist)
-		{
-			wchar_t buff[64]; 
-			CheapWide(Advapi_Function[func], buff, 64);
-			message.append(buff).append(Advapi_Support[func] ? L"\t[o]" : L"\t[x]").append(L"\n");
-		}
+		//for each(int func in functionlist)
+		//{
+		//	wchar_t buff[64]; 
+		//	CheapWide(Advapi_Function[func], buff, 64);
+		//	message.append(buff).append(Advapi_Support[func] ? L"\t[o]" : L"\t[x]").append(L"\n");
+		//}
 
 		delete[] buffer;
 		file.close();
 	}
 	else
 	{
-		message = wstring(L"Could not open file: ").append(filename.c_str()).append(L"\n");
+		wprintf(L"Could not open file.\n");
 	}
 	
-	MessageBoxW(NULL, message.c_str(), L"Command line", MB_OK);
-
 	return EXIT_SUCCESS;
 }
