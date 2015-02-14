@@ -1,14 +1,58 @@
 LIBRARY	"Regemu32.dll"
 
 EXPORTS
-		DllMain
-		RegCloseKey         @1561
-		RegConnectRegistryA @1562
-		RegCreateKeyA       @1568
-		RegCreateKeyExA     @1569
-		RegOpenKeyA         @1608
-		RegOpenKeyExA       @1609
-		RegQueryValueA      @1621
-		RegQueryValueExA    @1622
-		RegSetValueA        @1637
-		RegSetValueExA      @1638
+        ; Passthrough functions
+
+        AdjustTokenPrivileges    = adjust_token_privileges      @1033
+		AllocateAndInitializeSid = allocate_and_initialize_sid  @1034
+		CheckTokenMembership     = check_token_membership       @1097
+        FreeSid                  = free_sid                     @1309
+		GetUserNameA             = get_user_name_a              @1379   
+		GetUserNameW             = get_user_name_w              @1380 
+		LookupPrivilegeValueW    = lookup_privilege_value_w     @1430
+		OpenProcessToken         = open_process_token           @1531
+		
+		; Emulated functions below
+
+		RegCloseKey         = reg_close_key          @1597
+		
+		RegConnectRegistryA   = reg_connect_registry_a    @1598
+		RegConnectRegistryExA = reg_connect_registry_ex_a @1599
+		RegConnectRegistryExW = reg_connect_registry_ex_w @1600
+		RegConnectRegistryW   = reg_connect_registry_w    @1601
+		
+		RegCreateKeyA       = reg_create_key_a       @1604
+		RegCreateKeyExA     = reg_create_key_ex_a    @1605
+		RegCreateKeyExW     = reg_create_key_ex_w    @1606
+		RegCreateKeyW       = reg_create_key_a       @1609
+		
+		RegDeleteKeyA       = reg_delete_key_a       @1610
+		RegDeleteKeyW       = reg_delete_key_w       @1617
+		
+		RegDeleteValueA     = reg_delete_value_a     @1620
+		RegDeleteValueW     = reg_delete_value_w     @1621
+		
+		RegEnumKeyA         = reg_enum_key_a         @1626
+		RegEnumKeyExA       = reg_enum_key_ex_a      @1627
+		RegEnumKeyExW       = reg_enum_key_ex_w      @1628
+		RegEnumKeyW         = reg_enum_key_w         @1629
+		
+		RegFlushKey         = reg_flush_key          @1632
+		
+		RegOpenKeyA         = reg_open_key_a         @1644
+		RegOpenKeyExA       = reg_open_key_ex_a      @1645
+		RegOpenKeyExW       = reg_open_key_ex_w      @1646
+		RegOpenKeyW         = reg_open_key_w         @1649
+		
+		RegQueryInfoKeyA    = reg_query_info_key_a   @1652
+		RegQueryInfoKeyW    = reg_query_info_key_w   @1653
+		
+		RegQueryValueA      = reg_query_value_a      @1657
+		RegQueryValueExA    = reg_query_value_ex_a   @1658
+		RegQueryValueExW    = reg_query_value_ex_w   @1659
+		RegQueryValueW      = reg_query_value_w      @1660
+
+		RegSetValueA        = reg_set_value_a        @1673
+		RegSetValueExA      = reg_set_value_ex_a     @1674
+		RegSetValueExW      = reg_set_value_ex_w     @1675
+		RegSetValueW        = reg_set_value_w        @1676

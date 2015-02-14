@@ -52,6 +52,7 @@
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -69,19 +70,22 @@
       <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Wrapper.cpp" />
-    <ClCompile Include="Regemu32.cpp" />
+    <ClCompile Include="regemu.cpp" />
+    <ClCompile Include="registry.cpp" />
+    <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="wrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Exports.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="registry.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Windows_Mini.h" />
-    <ClInclude Include="Wrapper.h" />
+    <ClInclude Include="regemu.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Regemu32.rc" />

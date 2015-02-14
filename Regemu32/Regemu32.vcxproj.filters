@@ -15,10 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Wrapper.cpp">
+    <ClCompile Include="winmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Regemu32.cpp">
+    <ClCompile Include="registry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="regemu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -28,13 +34,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Windows_Mini.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Wrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="regemu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="registry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
