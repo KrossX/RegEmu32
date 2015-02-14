@@ -23,8 +23,10 @@ namespace regemu
 	LSTATUS set_value_ex(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValueName, DWORD dwType, const BYTE *lpData, DWORD cbData, bool wide);
 }
 
+//#define LOG
+
 #ifdef LOG
-	#define WPRINTF wprintf
+	#define WPRINTF(...) wprintf(__VA_ARGS__)
 #else
-	#define WPRINTF(x)
+	#define WPRINTF(...)
 #endif
