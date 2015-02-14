@@ -149,7 +149,7 @@ namespace regemu
 {
 	LSTATUS close_key(HKEY hKey)
 	{
-		wprintf(L"%s\n", __FUNCTIONW__);
+		WPRINTF(L"%s\n", __FUNCTIONW__);
 
 		if ((int)hKey < 0 || (int)hKey >= registry.handle_size)
 			return ERROR_INVALID_HANDLE;
@@ -159,7 +159,7 @@ namespace regemu
 
 	LSTATUS create_key(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult, bool open)
 	{
-		wprintf(L"%s: %08X, %s\n", __FUNCTIONW__, hKey, lpSubKey);
+		WPRINTF(L"%s: %08X, %s\n", __FUNCTIONW__, hKey, lpSubKey);
 
 		reg_key *curr_key = check_handle(hKey);
 		if (!curr_key) return ERROR_INVALID_HANDLE;
@@ -197,37 +197,37 @@ namespace regemu
 
 	LSTATUS delete_key(HKEY hKey, LPCWSTR lpSubKey)
 	{
-		wprintf(L"%s\n", __FUNCTIONW__);
+		WPRINTF(L"%s\n", __FUNCTIONW__);
 		return -1;
 	}
 
 	LSTATUS delete_value(HKEY hKey, LPCWSTR lpValueName)
 	{
-		wprintf(L"%s\n", __FUNCTIONW__);
+		WPRINTF(L"%s\n", __FUNCTIONW__);
 		return -1;
 	}
 
 	LSTATUS enum_key(HKEY hKey, DWORD dwIndex, LPBYTE lpName, LPDWORD cchName, bool wide)
 	{
-		wprintf(L"%s\n", __FUNCTIONW__);
+		WPRINTF(L"%s\n", __FUNCTIONW__);
 		return -1;
 	}
 
 	LSTATUS flush_key(HKEY hKey)
 	{
-		wprintf(L"%s\n", __FUNCTIONW__);
+		WPRINTF(L"%s\n", __FUNCTIONW__);
 		return ERROR_SUCCESS;
 	}
 
 	LSTATUS query_info_key(HKEY hKey, LPBYTE lpClass, LPDWORD lpcchClass, LPDWORD lpcSubKeys, LPDWORD lpcbMaxSubKeyLen, LPDWORD lpcbMaxClassLen, LPDWORD lpcValues, LPDWORD lpcbMaxValueNameLen, LPDWORD lpcbMaxValueLen, LPDWORD lpcbSecurityDescriptor, PFILETIME lpftLastWriteTime, bool wide)
 	{
-		wprintf(L"%s\n", __FUNCTIONW__);
+		WPRINTF(L"%s\n", __FUNCTIONW__);
 		return -1;
 	}
 
 	LSTATUS query_value_ex(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValueName, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData, bool wide)
 	{
-		wprintf(L"%s: %08X, %s, %s, type %d, data %d, %s\n", __FUNCTIONW__, hKey, lpSubKey, lpValueName, lpType? *lpType : 0, lpcbData? *lpcbData : 0, wide ? L"wide" : L"ansi");
+		WPRINTF(L"%s: %08X, %s, %s, type %d, data %d, %s\n", __FUNCTIONW__, hKey, lpSubKey, lpValueName, lpType? *lpType : 0, lpcbData? *lpcbData : 0, wide ? L"wide" : L"ansi");
 
 		std::wstring subkey(lpSubKey ? lpSubKey : L"");
 		std::wstring vname(lpValueName ? lpValueName : L"");
@@ -246,7 +246,7 @@ namespace regemu
 		}
 		else
 		{
-			wprintf(L"%s: name: %s, key: %s\n", __FUNCTIONW__, vname.c_str(), curr_key->name.c_str());
+			WPRINTF(L"%s: name: %s, key: %s\n", __FUNCTIONW__, vname.c_str(), curr_key->name.c_str());
 			value = find_value(vname, curr_key);
 			if (!value) return ERROR_FILE_NOT_FOUND;
 		}
@@ -256,7 +256,7 @@ namespace regemu
 
 		if(lpcbData != nullptr)
 		{
-			wprintf(L"%s: SET!\n", __FUNCTIONW__);
+			WPRINTF(L"%s: SET!\n", __FUNCTIONW__);
 
 			size_t data_size = 0;
 
@@ -290,7 +290,7 @@ namespace regemu
 					DWORD number = std::wcstoul(value->data.c_str(), nullptr, 16);
 					*(DWORD*)lpData = number;
 
-					wprintf(L"%s: DWORD %08X, value %s\n", __FUNCTIONW__, number, value->data.c_str());
+					WPRINTF(L"%s: DWORD %08X, value %s\n", __FUNCTIONW__, number, value->data.c_str());
 				}
 				else
 				{
@@ -402,7 +402,7 @@ namespace regemu
 		}
 
 
-		wprintf(L"%s: %08X, %s, %s, %d, %s\n", __FUNCTIONW__, hKey, lpSubKey, lpValueName, dwType, wide ? L"wide" : L"ansi");
+		WPRINTF(L"%s: %08X, %s, %s, %d, %s\n", __FUNCTIONW__, hKey, lpSubKey, lpValueName, dwType, wide ? L"wide" : L"ansi");
 		return ERROR_SUCCESS;
 	}
 

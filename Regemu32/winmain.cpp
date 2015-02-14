@@ -7,12 +7,14 @@
 
 //HINSTANCE h_instance = nullptr;
 
+#ifdef LOG
 class console
 {
 public:
 	console() { freopen("regemulog.txt", "w", stdout); }
 	~console() { fclose(stdout); }
 } pewpew;
+#endif
 
 extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
@@ -22,11 +24,11 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpRes
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		wprintf(L"%s: DLL_PROCESS_ATTACH (%d)\n", __FUNCTIONW__, fdwReason);
+		WPRINTF(L"%s: DLL_PROCESS_ATTACH (%d)\n", __FUNCTIONW__, fdwReason);
 		break;
 
 	case DLL_PROCESS_DETACH:
-		wprintf(L"%s: DLL_PROCESS_DETACH (%d)\n", __FUNCTIONW__, fdwReason);
+		WPRINTF(L"%s: DLL_PROCESS_DETACH (%d)\n", __FUNCTIONW__, fdwReason);
 		break;
 	}
 
