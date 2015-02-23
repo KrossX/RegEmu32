@@ -217,8 +217,14 @@ BOOL WINAPI allocate_and_initialize_sid(PSID_IDENTIFIER_AUTHORITY a, BYTE b, DWO
 BOOL WINAPI check_token_membership(HANDLE a, PSID b, PBOOL c)
 { return CheckTokenMembership(a, b, c); }
 
+BOOL WINAPI equal_sid(PSID a, PSID b)
+{ return EqualSid(a, b); }
+
 PVOID WINAPI free_sid(PSID a)
 { return FreeSid(a); }
+
+BOOL WINAPI get_token_information(HANDLE a, TOKEN_INFORMATION_CLASS b, LPVOID c, DWORD d, PDWORD e)
+{ return GetTokenInformation(a, b, c, d, e); }
 
 BOOL WINAPI get_user_name_a(LPSTR lpBuffer, LPDWORD pcbBuffer)
 { return GetUserNameA(lpBuffer, pcbBuffer); }
@@ -231,3 +237,6 @@ BOOL WINAPI lookup_privilege_value_w(LPCWSTR a, LPCWSTR b, PLUID c)
 
 BOOL WINAPI open_process_token(HANDLE a, DWORD b, PHANDLE c)
 { return OpenProcessToken(a, b, c); }
+
+BOOL WINAPI open_thread_token(HANDLE a, DWORD b, BOOL c, PHANDLE d)
+{ return OpenThreadToken(a, b, c, d); }
