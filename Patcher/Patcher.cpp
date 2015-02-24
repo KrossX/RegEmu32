@@ -3,6 +3,7 @@
 */
 
 #include <Windows.h>
+#include <Shlwapi.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -63,8 +64,11 @@ std::wstring parse_command_line(int count, wchar_t* lines[])
 	std::vector<std::wstring> vlines;
 	std::wstring out;
 
-	for (int i = 1; i < count; i++)
-		vlines.push_back(std::wstring(lines[i]));
+	while (count--)
+	{
+		if (StrStrIW(lines[count], L"regemu32") == nullptr)
+			vlines.push_back(std::wstring(lines[count]));
+	}
 
 	for (std::wstring &ws : vlines)
 	{
@@ -159,8 +163,9 @@ int wmain(int argc, wchar_t* argv[])
 	}
 
 	std::wstring filename = parse_command_line(argc, argv);
-	if (filename[0] == L'"') filename = filename.substr(1, filename.find_last_of(L'"') - 1);
+	if (filename.empty()) return ERROR_SUCCESS;
 
+	if (filename[0] == L'"') filename = filename.substr(1, filename.find_last_of(L'"') - 1);
 	wprintf(L"%s (%d): ", filename.c_str(), setting_mode);
 
 	std::fstream file(filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::ate);
