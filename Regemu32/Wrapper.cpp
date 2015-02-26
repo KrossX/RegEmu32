@@ -208,6 +208,12 @@ LSTATUS WINAPI reg_set_value_w(HKEY hKey, LPCWSTR lpSubKey, DWORD dwType, LPCWST
 
 // PASSTHROUGH
 
+BOOL WINAPI access_check(PSECURITY_DESCRIPTOR a, HANDLE b, DWORD c, PGENERIC_MAPPING d, PPRIVILEGE_SET e, LPDWORD f, LPDWORD g, LPBOOL h)
+{ return AccessCheck(a, b, c, d, e, f, g, h); }
+
+BOOL WINAPI add_access_allowed_ace(PACL a, DWORD b, DWORD c, PSID d)
+{ return AddAccessAllowedAce(a, b, c, d); }
+
 BOOL WINAPI adjust_token_privileges(HANDLE a, BOOL b, PTOKEN_PRIVILEGES c, DWORD d, PTOKEN_PRIVILEGES e, PDWORD f)
 { return AdjustTokenPrivileges(a, b, c, d, e, f); }
 
@@ -217,11 +223,17 @@ BOOL WINAPI allocate_and_initialize_sid(PSID_IDENTIFIER_AUTHORITY a, BYTE b, DWO
 BOOL WINAPI check_token_membership(HANDLE a, PSID b, PBOOL c)
 { return CheckTokenMembership(a, b, c); }
 
+BOOL WINAPI duplicate_token(HANDLE a, SECURITY_IMPERSONATION_LEVEL b, PHANDLE c)
+{ return DuplicateToken(a, b, c); }
+
 BOOL WINAPI equal_sid(PSID a, PSID b)
 { return EqualSid(a, b); }
 
 PVOID WINAPI free_sid(PSID a)
 { return FreeSid(a); }
+
+DWORD WINAPI get_length_sid(PSID a)
+{ return GetLengthSid(a); }
 
 BOOL WINAPI get_token_information(HANDLE a, TOKEN_INFORMATION_CLASS b, LPVOID c, DWORD d, PDWORD e)
 { return GetTokenInformation(a, b, c, d, e); }
@@ -232,6 +244,15 @@ BOOL WINAPI get_user_name_a(LPSTR lpBuffer, LPDWORD pcbBuffer)
 BOOL WINAPI get_user_name_w(LPWSTR lpBuffer, LPDWORD pcbBuffer)
 { return GetUserNameW(lpBuffer, pcbBuffer); }
 
+BOOL WINAPI initialize_acl(PACL a, DWORD b, DWORD c)
+{ return InitializeAcl(a, b, c); }
+
+BOOL WINAPI initialize_security_descriptor(PSECURITY_DESCRIPTOR a, DWORD b)
+{ return InitializeSecurityDescriptor(a, b); }
+
+BOOL WINAPI is_valid_security_descriptor(PSECURITY_DESCRIPTOR a)
+{ return IsValidSecurityDescriptor(a); }
+
 BOOL WINAPI lookup_privilege_value_w(LPCWSTR a, LPCWSTR b, PLUID c)
 { return LookupPrivilegeValueW(a, b, c); }
 
@@ -240,3 +261,12 @@ BOOL WINAPI open_process_token(HANDLE a, DWORD b, PHANDLE c)
 
 BOOL WINAPI open_thread_token(HANDLE a, DWORD b, BOOL c, PHANDLE d)
 { return OpenThreadToken(a, b, c, d); }
+
+BOOL WINAPI set_security_descriptor_dacl(PSECURITY_DESCRIPTOR a, BOOL b, PACL c, BOOL d)
+{ return SetSecurityDescriptorDacl(a, b, c, d); }
+
+BOOL WINAPI set_security_descriptor_group(PSECURITY_DESCRIPTOR a, PSID b, BOOL c)
+{ return SetSecurityDescriptorGroup(a, b, c); }
+
+BOOL WINAPI set_security_descriptor_owner(PSECURITY_DESCRIPTOR a, PSID b, BOOL c)
+{ return SetSecurityDescriptorOwner(a, b, c); }
