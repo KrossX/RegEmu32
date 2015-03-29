@@ -223,6 +223,123 @@ BOOL WINAPI allocate_and_initialize_sid(PSID_IDENTIFIER_AUTHORITY a, BYTE b, DWO
 BOOL WINAPI check_token_membership(HANDLE a, PSID b, PBOOL c)
 { return CheckTokenMembership(a, b, c); }
 
+BOOL WINAPI crypt_acquire_context_a(HCRYPTPROV *a, LPCSTR b, LPCSTR c, DWORD d, DWORD e)
+{ return CryptAcquireContextA(a, b, c, d, e); }
+
+BOOL WINAPI crypt_acquire_context_w(HCRYPTPROV *a, LPCWSTR b, LPCWSTR c, DWORD d, DWORD e)
+{ return CryptAcquireContextW(a, b, c, d, e); }
+
+BOOL WINAPI crypt_context_add_ref(HCRYPTPROV a, DWORD *b, DWORD c)
+{ return CryptContextAddRef(a, b, c); }
+
+BOOL WINAPI crypt_create_hash(HCRYPTPROV a, ALG_ID b, HCRYPTKEY c, DWORD d, HCRYPTHASH *e)
+{ return CryptCreateHash(a, b, c, d ,e); }
+
+BOOL WINAPI crypt_decrypt(HCRYPTKEY a, HCRYPTHASH b, BOOL c, DWORD d, BYTE *e, DWORD *f)
+{ return CryptDecrypt(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_derive_key(HCRYPTPROV a, ALG_ID b, HCRYPTKEY c, DWORD d, HCRYPTHASH *e)
+{ return CryptDeriveKey(a, b, c, d, e); }
+
+BOOL WINAPI crypt_destroy_hash(HCRYPTHASH a)
+{ return CryptDestroyHash(a); }
+
+BOOL WINAPI crypt_destroy_key(HCRYPTKEY a)
+{ return CryptDestroyKey(a); }
+
+BOOL WINAPI crypt_duplicate_hash(HCRYPTHASH a, DWORD *b, DWORD c, HCRYPTHASH *d)
+{ return CryptDuplicateHash(a, b, c, d); }
+
+BOOL WINAPI crypt_duplicate_key(HCRYPTKEY a, DWORD *b, DWORD c, HCRYPTKEY *d)
+{ return CryptDuplicateKey(a, b, c, d); }
+
+BOOL WINAPI crypt_encrypt(HCRYPTKEY a, HCRYPTHASH b, BOOL c, DWORD d, BYTE *e, DWORD *f, DWORD g)
+{ return CryptEncrypt(a, b, c, d, e, f, g); }
+
+BOOL WINAPI crypt_enum_provider_types_a(DWORD a, DWORD *b, DWORD c, DWORD *d, LPSTR e, DWORD *f)
+{ return CryptEnumProviderTypesA(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_enum_provider_types_w(DWORD a, DWORD *b, DWORD c, DWORD *d, LPWSTR e, DWORD *f)
+{ return CryptEnumProviderTypesW(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_enum_providers_a(DWORD a, DWORD *b, DWORD c, DWORD *d, LPSTR e, DWORD *f)
+{ return CryptEnumProvidersA(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_enum_providers_w(DWORD a, DWORD *b, DWORD c, DWORD *d, LPWSTR e, DWORD *f)
+{ return CryptEnumProvidersW(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_export_key(HCRYPTKEY a, HCRYPTKEY b, DWORD c, DWORD d, BYTE *e, DWORD *f)
+{ return CryptExportKey(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_gen_key(HCRYPTPROV a, ALG_ID b, DWORD c, HCRYPTKEY *d)
+{ return CryptGenKey(a, b, c, d); }
+
+BOOL WINAPI crypt_gen_random(HCRYPTPROV a, DWORD b, BYTE *c)
+{ return CryptGenRandom(a, b, c); }
+
+BOOL WINAPI crypt_get_default_provider_a(DWORD a, DWORD *b, DWORD c, LPSTR d, DWORD *e)
+{ return CryptGetDefaultProviderA(a, b, c, d, e); }
+
+BOOL WINAPI crypt_get_default_provider_w(DWORD a, DWORD *b, DWORD c, LPWSTR d, DWORD *e)
+{ return CryptGetDefaultProviderW(a, b, c, d, e); }
+
+BOOL WINAPI crypt_get_hash_param(HCRYPTHASH a, DWORD b, BYTE *c, DWORD *d, DWORD e)
+{ return CryptGetHashParam(a, b, c, d, e); }
+
+BOOL WINAPI crypt_get_key_param(HCRYPTHASH a, DWORD b, BYTE *c, DWORD *d, DWORD e)
+{ return CryptGetKeyParam(a, b, c, d, e); }
+
+BOOL WINAPI crypt_get_prov_param(HCRYPTPROV a, DWORD b, BYTE *c, DWORD *d, DWORD e)
+{ return CryptGetProvParam(a, b, c, d, e); }
+
+BOOL WINAPI crypt_get_user_key(HCRYPTPROV a, DWORD b, HCRYPTKEY *c)
+{ return CryptGetUserKey(a, b, c); }
+
+BOOL WINAPI crypt_hash_data(HCRYPTHASH a, const BYTE* b, DWORD c, DWORD d)
+{ return CryptHashData(a, b, c, d); }
+
+BOOL WINAPI crypt_hash_session_key(HCRYPTHASH a, HCRYPTKEY b, DWORD c)
+{ return CryptHashSessionKey(a, b, c); }
+
+BOOL WINAPI crypt_import_key(HCRYPTHASH a, const BYTE* b, DWORD c, HCRYPTKEY d, DWORD e, HCRYPTKEY *f)
+{ return CryptImportKey(a, b, c, d, e, f); }
+
+BOOL WINAPI crypt_release_context(HCRYPTPROV a, DWORD b)
+{ return CryptReleaseContext(a, b); }
+
+BOOL WINAPI crypt_set_hash_param(HCRYPTHASH a, DWORD b, const BYTE* c, DWORD d)
+{ return CryptSetHashParam(a, b, c, d); }
+
+BOOL WINAPI crypt_set_key_param(HCRYPTKEY a, DWORD b, const BYTE* c, DWORD d)
+{ return CryptSetKeyParam(a, b, c, d); }
+
+BOOL WINAPI crypt_set_prov_param(HCRYPTPROV a, DWORD b, const BYTE* c, DWORD d)
+{ return CryptSetProvParam(a, b, c, d); }
+
+BOOL WINAPI crypt_set_provider_a(LPCSTR a, DWORD b)
+{ return CryptSetProviderA(a, b); }
+
+BOOL WINAPI crypt_set_provider_ex_a(LPCSTR a, DWORD b, DWORD *c, DWORD d)
+{ return CryptSetProviderExA(a, b, c, d); }
+
+BOOL WINAPI crypt_set_provider_ex_w(LPCWSTR a, DWORD b, DWORD *c, DWORD d)
+{ return CryptSetProviderExW(a, b, c, d); }
+
+BOOL WINAPI crypt_set_provider_w(LPCWSTR a, DWORD b)
+{ return CryptSetProviderW(a, b); }
+
+BOOL WINAPI crypt_sign_hash_a(HCRYPTHASH a, DWORD b, LPCSTR c, DWORD d, BYTE *e, DWORD *f)
+{ return CryptSignHashA(a, b, c, d, e ,f); }
+
+BOOL WINAPI crypt_sign_hash_w(HCRYPTHASH a, DWORD b, LPCWSTR c, DWORD d, BYTE *e, DWORD *f)
+{ return CryptSignHashW(a, b, c, d, e ,f); }
+
+BOOL WINAPI crypt_verify_signature_a(HCRYPTHASH a, const BYTE *b, DWORD c, HCRYPTKEY d, LPCSTR e, DWORD f)
+{ return CryptVerifySignatureA(a, b, c, d, e ,f); }
+
+BOOL WINAPI crypt_verify_signature_w(HCRYPTHASH a, const BYTE *b, DWORD c, HCRYPTKEY d, LPCWSTR e, DWORD f)
+{ return CryptVerifySignatureW(a, b, c, d, e ,f); }
+
 BOOL WINAPI duplicate_token(HANDLE a, SECURITY_IMPERSONATION_LEVEL b, PHANDLE c)
 { return DuplicateToken(a, b, c); }
 
