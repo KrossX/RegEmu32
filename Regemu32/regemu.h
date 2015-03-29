@@ -12,7 +12,7 @@
 namespace regemu
 {
 	LSTATUS close_key(HKEY hKey);
-	LSTATUS create_key(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult, bool open);
+	LSTATUS create_key(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult, LPDWORD lpdwDisposition, bool open);
 	LSTATUS delete_key(HKEY hKey, LPCWSTR lpSubKey);
 	LSTATUS delete_value(HKEY hKey, LPCWSTR lpValueName);
 	LSTATUS enum_key(HKEY hKey, DWORD dwIndex, LPBYTE lpName, LPDWORD cchName, bool wide);

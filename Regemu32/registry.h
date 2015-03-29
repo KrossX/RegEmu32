@@ -10,7 +10,7 @@ struct reg_value
 {
 	std::wstring name, data;
 
-	DWORD type;
+	DWORD type = 1;
 
 	bool operator < (const reg_value& val) const
 	{

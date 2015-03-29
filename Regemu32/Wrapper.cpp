@@ -23,49 +23,49 @@ LSTATUS WINAPI reg_close_key(HKEY hKey)
 LSTATUS WINAPI reg_connect_registry_a(LPCSTR lpMachineName, HKEY hKey, PHKEY phkResult)
 {
 	//return RegConnectRegistryA(lpMachineName, hKey, phkResult);
-	return regemu::create_key(hKey, NULL, phkResult, true);
+	return regemu::create_key(hKey, NULL, phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_connect_registry_ex_a(LPCSTR lpMachineName, HKEY hKey, ULONG Flags, PHKEY phkResult)
 {
 	//return RegConnectRegistryExA(lpMachineName, hKey, Flags, phkResult);
-	return regemu::create_key(hKey, NULL, phkResult, true);
+	return regemu::create_key(hKey, NULL, phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_connect_registry_ex_w(LPCWSTR lpMachineName, HKEY hKey, ULONG Flags, PHKEY phkResult)
 {
 	//return RegConnectRegistryExW(lpMachineName, hKey, Flags, phkResult);
-	return regemu::create_key(hKey, NULL, phkResult, true);
+	return regemu::create_key(hKey, NULL, phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_connect_registry_w(LPCWSTR lpMachineName, HKEY hKey, PHKEY phkResult)
 {
 	//return RegConnectRegistryW(lpMachineName, hKey, phkResult);
-	return regemu::create_key(hKey, NULL, phkResult, true);
+	return regemu::create_key(hKey, NULL, phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_create_key_a(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 {
 	//return RegCreateKeyA(hKey, lpSubKey, phkResult);
-	return regemu::create_key(hKey, atow(lpSubKey), phkResult, false);
+	return regemu::create_key(hKey, atow(lpSubKey), phkResult, nullptr, false);
 }
 
 LSTATUS WINAPI reg_create_key_ex_a(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass, DWORD dwOptions, REGSAM samDesired, LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
 {
 	//return RegCreateKeyExA(hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
-	return regemu::create_key(hKey, atow(lpSubKey), phkResult, false);
+	return regemu::create_key(hKey, atow(lpSubKey), phkResult, lpdwDisposition, false);
 }
 
 LSTATUS WINAPI reg_create_key_ex_w(HKEY hKey, LPCWSTR lpSubKey, DWORD Reserved, LPWSTR lpClass, DWORD dwOptions, REGSAM samDesired, LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition)
 {
 	//return RegCreateKeyExW(hKey, lpSubKey, Reserved, lpClass, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
-	return regemu::create_key(hKey, lpSubKey, phkResult, false);
+	return regemu::create_key(hKey, lpSubKey, phkResult, lpdwDisposition, false);
 }
 
 LSTATUS WINAPI reg_create_key_w(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult)
 {
 	//return RegCreateKeyW(hKey, lpSubKey, phkResult);
-	return regemu::create_key(hKey, lpSubKey, phkResult, false);
+	return regemu::create_key(hKey, lpSubKey, phkResult, nullptr, false);
 }
 
 LSTATUS WINAPI reg_delete_key_a(HKEY hKey, LPCSTR lpSubKey)
@@ -122,28 +122,40 @@ LSTATUS WINAPI reg_flush_key(HKEY hKey)
 	return regemu::flush_key(hKey);
 }
 
+LSTATUS WINAPI reg_get_value_a(HKEY hKey, LPCSTR lpSubKey, LPCSTR lpValue, DWORD dwFlags, LPDWORD pdwType, PVOID pvData, LPDWORD pcbData)
+{
+	//return RegGetValueA(hKey, lpSubKey, lpValue, dwFlags, pdwType, pvData, pcbData);
+	return regemu::query_value_ex(hKey, atow(lpSubKey), atow(lpValue), pdwType, (LPBYTE)pvData, pcbData, false);
+}
+
+LSTATUS WINAPI reg_get_value_w(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWORD dwFlags, LPDWORD pdwType, PVOID pvData, LPDWORD pcbData)
+{
+	//return RegGetValueW(hKey, lpSubKey, lpValue, dwFlags, pdwType, pvData, pcbData);
+	return regemu::query_value_ex(hKey, lpSubKey, lpValue, pdwType, (LPBYTE)pvData, pcbData, true);
+}
+
 LSTATUS WINAPI reg_open_key_a(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 {
 	//return RegOpenKeyA(hKey, lpSubKey, phkResult);
-	return regemu::create_key(hKey, atow(lpSubKey), phkResult, true);
+	return regemu::create_key(hKey, atow(lpSubKey), phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_open_key_ex_a(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 {
 	//return RegOpenKeyExA(hKey, lpSubKey, ulOptions, samDesired, phkResult);
-	return regemu::create_key(hKey, atow(lpSubKey), phkResult, true);
+	return regemu::create_key(hKey, atow(lpSubKey), phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_open_key_ex_w(HKEY hKey, LPCWSTR lpSubKey, DWORD ulOptions, REGSAM samDesired, PHKEY phkResult)
 {
 	//return RegOpenKeyExW(hKey, lpSubKey, ulOptions, samDesired, phkResult);
-	return regemu::create_key(hKey, lpSubKey, phkResult, true);
+	return regemu::create_key(hKey, lpSubKey, phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_open_key_w(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult)
 {
 	//return RegOpenKeyW(hKey, lpSubKey, phkResult);
-	return regemu::create_key(hKey, lpSubKey, phkResult, true);
+	return regemu::create_key(hKey, lpSubKey, phkResult, nullptr, true);
 }
 
 LSTATUS WINAPI reg_query_info_key_a(HKEY hKey, LPSTR lpClass, LPDWORD lpcchClass, LPDWORD lpReserved, LPDWORD lpcSubKeys, LPDWORD lpcbMaxSubKeyLen, LPDWORD lpcbMaxClassLen, LPDWORD lpcValues, LPDWORD lpcbMaxValueNameLen, LPDWORD lpcbMaxValueLen, LPDWORD lpcbSecurityDescriptor, PFILETIME lpftLastWriteTime)

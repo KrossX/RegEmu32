@@ -59,7 +59,7 @@ std::wstring get_substring(std::wstring &subkey)
 	return newstring;
 }
 
-reg_key* create_key(std::wstring &subkey, reg_key *curr_key)
+reg_key* create_regkey(std::wstring &subkey, reg_key *curr_key, bool *created_new = nullptr)
 {
 	reg_key *k = nullptr;
 
@@ -67,6 +67,7 @@ reg_key* create_key(std::wstring &subkey, reg_key *curr_key)
 	std::wstring subkeylow = tolow(newsubkey);
 
 	bool found = false;
+	if (created_new) *created_new = false;
 
 	for (reg_key &child : curr_key->child)
 	{
@@ -75,17 +76,18 @@ reg_key* create_key(std::wstring &subkey, reg_key *curr_key)
 		if (childlow == subkeylow)
 		{
 			found = true;
-			k = subkey.empty() ? &child : create_key(subkey, &child);
+			k = subkey.empty() ? &child : create_regkey(subkey, &child);
 		}
 	}
 
 	if (!found)
 	{
+		if (created_new) *created_new = true;
 		reg_key newkey;
 		newkey.name = newsubkey;
 		curr_key->child.push_back(newkey);
 		reg_key &nkp = curr_key->child.back();
-		k = subkey.empty() ? &nkp : create_key(subkey, &nkp);
+		k = subkey.empty() ? &nkp : create_regkey(subkey, &nkp);
 	}
 	
 	return k;
@@ -157,7 +159,7 @@ namespace regemu
 			return ERROR_SUCCESS;
 	}
 
-	LSTATUS create_key(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult, bool open)
+	LSTATUS create_key(HKEY hKey, LPCWSTR lpSubKey, PHKEY phkResult, LPDWORD lpdwDisposition, bool open)
 	{
 		WPRINTF(L"%s: %08X, %s\n", __FUNCTIONW__, hKey, lpSubKey);
 
@@ -168,10 +170,14 @@ namespace regemu
 
 		if (!subkey.empty() && curr_key != nullptr)
 		{
+			bool created_new;
+
 			if (open)
 				curr_key = find_key(subkey, curr_key);
 			else
-				curr_key = create_key(subkey, curr_key);
+				curr_key = create_regkey(subkey, curr_key, &created_new);
+
+			if (lpdwDisposition) *lpdwDisposition = created_new ? REG_CREATED_NEW_KEY : REG_OPENED_EXISTING_KEY;
 		}
 		else if (predefined_key(hKey))
 		{
@@ -189,8 +195,6 @@ namespace regemu
 			phkResult = nullptr;
 			return ERROR_FILE_NOT_FOUND;
 		}
-
-
 
 		return -1;
 	}
@@ -232,7 +236,7 @@ namespace regemu
 		std::wstring subkey(lpSubKey ? lpSubKey : L"");
 		std::wstring vname(lpValueName ? lpValueName : L"");
 
-		if (!subkey.empty() && create_key(hKey, lpSubKey, &hKey, true) != ERROR_SUCCESS)
+		if (!subkey.empty() && create_key(hKey, lpSubKey, &hKey, nullptr, true) != ERROR_SUCCESS)
 			return ERROR_FILE_NOT_FOUND;
 
 		reg_key *curr_key = check_handle(hKey);
@@ -251,12 +255,12 @@ namespace regemu
 			if (!value) return ERROR_FILE_NOT_FOUND;
 		}
 
-
 		if (lpType) *lpType = value->type;
 
 		if(lpcbData != nullptr)
 		{
-			WPRINTF(L"%s: SET!\n", __FUNCTIONW__);
+			if (value->data.empty() || *lpcbData == 0) // hack...
+				return ERROR_SUCCESS;
 
 			size_t data_size = 0;
 
@@ -276,7 +280,6 @@ namespace regemu
 			{
 				if (data_size > *lpcbData)
 					return ERROR_MORE_DATA;
-
 
 				if(value->type == REG_SZ)
 				{
@@ -329,7 +332,7 @@ namespace regemu
 		std::wstring subkey(lpSubKey ? lpSubKey : L"");
 		std::wstring vname(lpValueName ? lpValueName : L"");
 
-		if (!subkey.empty() && create_key(hKey, lpSubKey, &hKey, true) != ERROR_SUCCESS)
+		if (!subkey.empty() && create_key(hKey, lpSubKey, &hKey, nullptr, true) != ERROR_SUCCESS)
 			return ERROR_FILE_NOT_FOUND;
 
 		reg_key *curr_key = check_handle(hKey);

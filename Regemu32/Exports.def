@@ -89,6 +89,9 @@ EXPORTS
 		RegEnumKeyW         = reg_enum_key_w         @1629
 		
 		RegFlushKey         = reg_flush_key          @1632
+
+		RegGetValueA        = reg_get_value_a        @1634
+		RegGetValueW        = reg_get_value_w        @1635
 		
 		RegOpenKeyA         = reg_open_key_a         @1644
 		RegOpenKeyExA       = reg_open_key_ex_a      @1645

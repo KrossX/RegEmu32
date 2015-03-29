@@ -70,7 +70,7 @@ windows_registry::windows_registry()
 				auto slash = line.find(L'\\');
 
 				curr_hkey = get_predefined_key(line.substr(0, slash));
-				regemu::create_key(curr_hkey, line.substr(slash + 1).c_str(), &curr_hkey, false);
+				regemu::create_key(curr_hkey, line.substr(slash + 1).c_str(), &curr_hkey, nullptr, false);
 			}
 			else if (line[0] == L'@' || line[0] == L'\"')
 			{
@@ -145,13 +145,13 @@ std::wstring outdata(reg_value &value)
 
 void outvalues(reg_key *curr_key, std::wstring str, std::wofstream &out)
 {
-	if (!curr_key->value.empty() || !curr_key->def.data.empty())
+	if (!curr_key->value.empty())// || !curr_key->def.data.empty())
 	{
 		std::sort(curr_key->value.begin(), curr_key->value.end());
 
 		out << str << curr_key->name << L"]\n";
 
-		if (!curr_key->def.data.empty())
+		//if (!curr_key->def.data.empty())
 			out << L"@=" << outdata(curr_key->def) << L"\n";
 		
 		for (reg_value &val : curr_key->value)
