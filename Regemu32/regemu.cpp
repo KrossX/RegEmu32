@@ -30,7 +30,7 @@ reg_key* predefined_key(HKEY key)
 
 std::wstring tolow(std::wstring &in)
 {
-	std::wstring out(in.size(), L'');
+	std::wstring out(in.size(), 0);
 	std::transform(in.begin(), in.end(), out.begin(), towlower);
 	return out;
 }
@@ -309,6 +309,10 @@ namespace regemu
 				return ERROR_SUCCESS;
 			}
 		}
+		else if (lpData == nullptr)
+		{
+			return ERROR_SUCCESS; // Query type?
+		}
 		else
 		{
 			// Copy data anyway? O.o
@@ -376,7 +380,7 @@ namespace regemu
 				else
 				{
 					std::string data_in((char*)buffer);
-					std::wstring wdata(data_in.length(), L'');
+					std::wstring wdata(data_in.length(), 0);
 					std::copy(data_in.begin(), data_in.end(), wdata.begin());
 					value->data = wdata;
 				}

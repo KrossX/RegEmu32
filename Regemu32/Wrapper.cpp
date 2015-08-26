@@ -9,7 +9,7 @@ static LPCWSTR atow(LPCSTR in)
 	static std::wstring wide;
 
 	std::string ansi(in ? in : "");
-	wide = std::wstring(ansi.length(), L'');
+	wide = std::wstring(ansi.length(), 0);
 	std::copy(ansi.begin(), ansi.end(), wide.begin());
 	return wide.c_str();
 }
