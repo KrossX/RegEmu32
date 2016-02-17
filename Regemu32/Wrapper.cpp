@@ -399,3 +399,21 @@ BOOL WINAPI set_security_descriptor_group(PSECURITY_DESCRIPTOR a, PSID b, BOOL c
 
 BOOL WINAPI set_security_descriptor_owner(PSECURITY_DESCRIPTOR a, PSID b, BOOL c)
 { return SetSecurityDescriptorOwner(a, b, c); }
+
+BOOL WINAPI system_function_036(PVOID a, ULONG b)
+{
+	// HACK
+	return TRUE; // return RtlGenRandom(a, b);
+}
+
+BOOL WINAPI system_function_040(PVOID a, ULONG b, ULONG c)
+{
+	// HACK
+	return TRUE; // return RtlEncryptMemory(a, b, c); 
+}
+
+BOOL WINAPI system_function_041(PVOID a, ULONG b, ULONG c)
+{
+	// HACK
+	return TRUE; // return RtlDecryptMemory(a, b, c); 
+}

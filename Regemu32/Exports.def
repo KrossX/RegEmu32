@@ -62,6 +62,9 @@ EXPORTS
 		SetSecurityDescriptorDacl    = set_security_descriptor_dacl   @1736
 		SetSecurityDescriptorGroup   = set_security_descriptor_group  @1737
 		SetSecurityDescriptorOwner   = set_security_descriptor_owner  @1738
+		SystemFunction036            = system_function_036            @1795
+		SystemFunction040            = system_function_040            @1796
+		SystemFunction041            = system_function_041            @1797
 		
 		; Emulated functions below
 
