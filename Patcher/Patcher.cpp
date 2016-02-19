@@ -66,8 +66,10 @@ std::wstring parse_command_line(int count, wchar_t* lines[])
 
 	while (count--)
 	{
-		if (StrStrIW(lines[count], L"regemu32") == nullptr)
-			vlines.push_back(std::wstring(lines[count]));
+		if (StrStrIW(lines[count], L"regemu32.dll") != nullptr) continue;
+		if (StrStrIW(lines[count], L"regemu32.exe") != nullptr) continue;
+
+		vlines.push_back(std::wstring(lines[count]));
 	}
 
 	for (std::wstring &ws : vlines)
