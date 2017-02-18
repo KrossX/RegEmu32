@@ -146,6 +146,58 @@ reg_key* check_handle(HKEY hKey)
 	return key;
 }
 
+LSTATUS query_data(reg_value *value, LPBYTE lpData, LPDWORD lpcbData, bool wide)
+{
+	if (value->data.empty() || *lpcbData == 0) // hack...
+		return ERROR_SUCCESS;
+
+	size_t data_size = 0;
+
+	switch (value->type)
+	{
+	case REG_SZ: data_size = (value->data.length() + 1) * (wide ? sizeof(wchar_t) : 1); break;
+	case REG_DWORD: data_size = sizeof(DWORD);  break;
+	default: data_size = std::count(value->data.begin(), value->data.end(), L',') + 1; break;
+	}
+
+	if (lpData == nullptr)
+	{
+		*lpcbData = data_size;
+	}
+	else
+	{
+		if (data_size > *lpcbData)
+			return ERROR_MORE_DATA;
+
+		if (value->type == REG_SZ)
+		{
+			if (wide)
+				memcpy(lpData, value->data.c_str(), data_size);
+			else
+				wcstombs((char*)lpData, value->data.c_str(), data_size);
+		}
+		else if (value->type == REG_DWORD)
+		{
+			DWORD number = std::wcstoul(value->data.c_str(), nullptr, 16);
+			*(DWORD*)lpData = number;
+
+			WPRINTF(L"%s: DWORD %08X, value %s\n", __FUNCTIONW__, number, value->data.c_str());
+		}
+		else
+		{
+			wchar_t *point = &value->data[0];
+
+			for (size_t i = 0; i < data_size; i++)
+			{
+				lpData[i] = std::wcstoul(point, &point, 16) & 0xFF;
+				point++;
+			}
+		}
+	}
+
+	return ERROR_SUCCESS;
+}
+
 
 namespace regemu
 {
@@ -214,13 +266,55 @@ namespace regemu
 	LSTATUS enum_key(HKEY hKey, DWORD dwIndex, LPBYTE lpName, LPDWORD cchName, bool wide)
 	{
 		WPRINTF(L"%s\n", __FUNCTIONW__);
-		return -1;
+
+		reg_key *curr_key = check_handle(hKey);
+		if(!curr_key) return ERROR_INVALID_HANDLE;
+
+		auto &keys = curr_key->child;
+		if(keys.empty() || dwIndex >= keys.size()) return ERROR_NO_MORE_ITEMS;
+
+		auto &k = keys[dwIndex];
+		if(*cchName <= k.name.size()) return ERROR_MORE_DATA;
+
+		memset(lpName, 0x00, *cchName);
+		*cchName = k.name.size();
+
+		if (wide)
+			memcpy(lpName, k.name.c_str(), k.name.size());
+		else
+			wcstombs((char*)lpName, k.name.c_str(), k.name.size());
+
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS enum_value(HKEY hKey, DWORD dwIndex, LPBYTE lpValueName, LPDWORD lpcchValueName, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData, bool wide)
 	{
 		WPRINTF(L"%s\n", __FUNCTIONW__);
-		return -1;
+
+		reg_key *curr_key = check_handle(hKey);
+		if (!curr_key) return ERROR_INVALID_HANDLE;
+
+		auto &values = curr_key->value;
+		if (values.empty() || dwIndex >= values.size()) return ERROR_NO_MORE_ITEMS;
+
+		auto &v = values[dwIndex];
+		if (*lpcchValueName <= v.name.size()) return ERROR_MORE_DATA;
+
+		memset(lpValueName, 0x00, *lpcchValueName);
+		*lpcchValueName = v.name.size();
+
+		if (wide)
+			memcpy(lpValueName, v.name.c_str(), v.name.size());
+		else
+			wcstombs((char*)lpValueName, v.name.c_str(), v.name.size());
+
+		if (lpType)
+			*lpType = v.type;
+
+		if (lpcbData != nullptr)
+			return query_data(&v, lpData, lpcbData, wide);
+
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS flush_key(HKEY hKey)
@@ -232,7 +326,56 @@ namespace regemu
 	LSTATUS query_info_key(HKEY hKey, LPBYTE lpClass, LPDWORD lpcchClass, LPDWORD lpcSubKeys, LPDWORD lpcbMaxSubKeyLen, LPDWORD lpcbMaxClassLen, LPDWORD lpcValues, LPDWORD lpcbMaxValueNameLen, LPDWORD lpcbMaxValueLen, LPDWORD lpcbSecurityDescriptor, PFILETIME lpftLastWriteTime, bool wide)
 	{
 		WPRINTF(L"%s\n", __FUNCTIONW__);
-		return -1;
+
+		reg_key *curr_key = check_handle(hKey);
+		if (!curr_key) return ERROR_INVALID_HANDLE;
+
+		//lpClass, lpchClass... ???
+
+		if (lpcSubKeys)
+			*lpcSubKeys = curr_key->child.size();
+
+		if (lpcbMaxSubKeyLen)
+		{
+			DWORD len = 0;
+			for(reg_key &k : curr_key->child)
+				len = max(len, k.name.size());
+			*lpcbMaxSubKeyLen = len;
+		}
+
+		if (lpcValues)
+			*lpcValues = curr_key->value.size();
+
+		if (lpcbMaxValueNameLen)
+		{
+			DWORD len = 0;
+			for (reg_value &v : curr_key->value)
+				len = max(len, v.name.size());
+			*lpcbMaxValueNameLen = len;
+		}
+
+		if (lpcbMaxValueLen)
+		{
+			DWORD len = 0;
+
+			for (reg_value &v : curr_key->value)
+			{
+				size_t data_size = 0;
+
+				switch (v.type)
+				{
+				case REG_SZ: data_size = (v.data.length() + 1) * (wide ? sizeof(wchar_t) : 1); break;
+				case REG_DWORD: data_size = sizeof(DWORD);  break;
+				default: data_size = std::count(v.data.begin(), v.data.end(), L',') + 1; break;
+				}
+
+				len = max(len, data_size);
+			}
+
+			*lpcbMaxValueLen = len;
+		}
+
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS query_value_ex(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValueName, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData, bool wide)
@@ -264,77 +407,9 @@ namespace regemu
 		if (lpType) *lpType = value->type;
 
 		if(lpcbData != nullptr)
-		{
-			if (value->data.empty() || *lpcbData == 0) // hack...
-				return ERROR_SUCCESS;
-
-			size_t data_size = 0;
-
-			switch (value->type)
-			{
-			case REG_SZ: data_size = (value->data.length() + 1) * (wide ? sizeof(wchar_t) : 1); break;
-			case REG_DWORD: data_size = sizeof(DWORD);  break;
-			default: data_size = std::count(value->data.begin(), value->data.end(), L',') + 1; break;
-			}
-
-			if (lpData == nullptr)
-			{
-				*lpcbData = data_size;
-				return ERROR_SUCCESS;
-			}
-			else
-			{
-				if (data_size > *lpcbData)
-					return ERROR_MORE_DATA;
-
-				if(value->type == REG_SZ)
-				{
-					if (wide)
-						memcpy(lpData, value->data.c_str(), data_size);
-					else
-						wcstombs((char*)lpData, value->data.c_str(), data_size);
-				}
-				else if (value->type == REG_DWORD)
-				{
-					DWORD number = std::wcstoul(value->data.c_str(), nullptr, 16);
-					*(DWORD*)lpData = number;
-
-					WPRINTF(L"%s: DWORD %08X, value %s\n", __FUNCTIONW__, number, value->data.c_str());
-				}
-				else
-				{
-					wchar_t *point = &value->data[0];
-
-					for (size_t i = 0; i < data_size; i++)
-					{
-						lpData[i] = std::wcstoul(point, &point, 16) & 0xFF;
-						point++;
-					}
-				}
-
-				return ERROR_SUCCESS;
-			}
-		}
-		else if (lpData == nullptr)
-		{
-			return ERROR_SUCCESS; // Query type?
-		}
-		else
-		{
-			// Copy data anyway? O.o
-		}
-
+			return query_data(value, lpData, lpcbData, wide);
 		
-
-		//RegQueryValueA(hKey, lpSubKey, lpValue, lpcbValue);
-		//query_value_ex(hKey, atow(lpSubKey), nullptr, nullptr, (LPBYTE)lpValue, (LPDWORD)lpcbValue, false);
-
-		//RegQueryValueExA(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
-		//regemu::query_value_ex(hKey, nullptr, atow(lpValueName), lpType, lpData, lpcbData, false);
-
-
-		
-		return -1;
+		return ERROR_SUCCESS;
 	}
 
 	LSTATUS set_value_ex(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValueName, DWORD dwType, const BYTE *lpData, DWORD cbData, bool wide)
