@@ -217,6 +217,12 @@ namespace regemu
 		return -1;
 	}
 
+	LSTATUS enum_value(HKEY hKey, DWORD dwIndex, LPBYTE lpValueName, LPDWORD lpcchValueName, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData, bool wide)
+	{
+		WPRINTF(L"%s\n", __FUNCTIONW__);
+		return -1;
+	}
+
 	LSTATUS flush_key(HKEY hKey)
 	{
 		WPRINTF(L"%s\n", __FUNCTIONW__);

@@ -116,6 +116,18 @@ LSTATUS WINAPI reg_enum_key_w(HKEY hKey, DWORD dwIndex, LPWSTR lpName, DWORD cch
 	return regemu::enum_key(hKey, dwIndex, (LPBYTE)lpName, &cchName, true);
 }
 
+LSTATUS WINAPI reg_enum_value_a(HKEY hKey, DWORD dwIndex, LPSTR lpValueName, LPDWORD lpcchValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
+{
+	//return RegEnumValueA(hKey, dwIndex, lpValueName, lpcchValueName, lpReserved, lpType, lpData, lpcbData);
+	return regemu::enum_value(hKey, dwIndex, (LPBYTE)lpValueName, lpcchValueName, lpType, lpData, lpcbData, false);
+}
+
+LSTATUS WINAPI reg_enum_value_w(HKEY hKey, DWORD dwIndex, LPWSTR lpValueName, LPDWORD lpcchValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
+{
+	//return RegEnumValueW(hKey, dwIndex, lpValueName, lpcchValueName, lpReserved, lpType, lpData, lpcbData);
+	return regemu::enum_value(hKey, dwIndex, (LPBYTE)lpValueName, lpcchValueName, lpType, lpData, lpcbData, true);
+}
+
 LSTATUS WINAPI reg_flush_key(HKEY hKey)
 {
 	//return RegFlushKey(hKey);
