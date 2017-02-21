@@ -373,6 +373,12 @@ BOOL WINAPI equal_sid(PSID a, PSID b)
 PVOID WINAPI free_sid(PSID a)
 { return FreeSid(a); }
 
+BOOL WINAPI get_file_security_a(LPCSTR a, SECURITY_INFORMATION b, PSECURITY_DESCRIPTOR c, DWORD d, LPDWORD e)
+{ return GetFileSecurityA(a, b, c, d ,e); }
+
+BOOL WINAPI get_file_security_w(LPCWSTR a, SECURITY_INFORMATION b, PSECURITY_DESCRIPTOR c, DWORD d, LPDWORD e)
+{ return GetFileSecurityW(a, b, c, d, e); }
+
 DWORD WINAPI get_length_sid(PSID a)
 { return GetLengthSid(a); }
 
@@ -390,6 +396,9 @@ BOOL WINAPI initialize_acl(PACL a, DWORD b, DWORD c)
 
 BOOL WINAPI initialize_security_descriptor(PSECURITY_DESCRIPTOR a, DWORD b)
 { return InitializeSecurityDescriptor(a, b); }
+
+BOOL WINAPI is_text_unicode(CONST VOID* a, int b, LPINT c)
+{ return IsTextUnicode(a, b, c); }
 
 BOOL WINAPI is_valid_security_descriptor(PSECURITY_DESCRIPTOR a)
 { return IsValidSecurityDescriptor(a); }

@@ -49,12 +49,15 @@ EXPORTS
 		DuplicateToken               = duplicate_token                @1240
 		EqualSid                     = equal_sid                      @1282
 		FreeSid                      = free_sid                       @1309
+		GetFileSecurityA             = get_file_security_a            @1325
+		GetFileSecurityW             = get_file_security_w            @1326
 		GetLengthSid                 = get_length_sid                 @1332
 		GetTokenInformation          = get_token_information          @1369
 		GetUserNameA                 = get_user_name_a                @1379
 		GetUserNameW                 = get_user_name_w                @1380
 		InitializeAcl                = initialize_acl                 @1397
 		InitializeSecurityDescriptor = initialize_security_descriptor @1398
+		IsTextUnicode                = is_text_unicode                @1407
 		IsValidSecurityDescriptor    = is_valid_security_descriptor   @1412
 		LookupPrivilegeValueW        = lookup_privilege_value_w       @1430
 		OpenProcessToken             = open_process_token             @1531
