@@ -146,6 +146,18 @@ LSTATUS WINAPI reg_get_value_w(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpValue, DWO
 	return regemu::query_value_ex(hKey, lpSubKey, lpValue, pdwType, (LPBYTE)pvData, pcbData, true);
 }
 
+LSTATUS WINAPI reg_load_key_a(HKEY hKey, LPCSTR lpSubKey, LPCSTR lpFile)
+{
+	//return RegLoadKeyA(hKey, lpSubKey, lpFile);
+	return regemu::load_key(hKey, atow(lpSubKey), atow(lpFile), false);
+}
+
+LSTATUS WINAPI reg_load_key_w(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpFile)
+{
+	//return RegLoadKeyW(hKey, lpSubKey, lpFile);
+	return regemu::load_key(hKey, lpSubKey, lpFile, true);
+}
+
 LSTATUS WINAPI reg_open_key_a(HKEY hKey, LPCSTR lpSubKey, PHKEY phkResult)
 {
 	//return RegOpenKeyA(hKey, lpSubKey, phkResult);
@@ -228,6 +240,18 @@ LSTATUS WINAPI reg_set_value_w(HKEY hKey, LPCWSTR lpSubKey, DWORD dwType, LPCWST
 {
 	//return RegSetValueW(hKey, lpSubKey, dwType, lpData, cbData);
 	return regemu::set_value_ex(hKey, lpSubKey, nullptr, dwType, (LPBYTE)lpData, cbData, true);
+}
+
+LSTATUS WINAPI reg_unload_key_a(HKEY hKey, LPCSTR lpSubKey)
+{
+	//return RegUnLoadKeyA(hKey, lpSubKey);
+	return regemu::unload_key(hKey, atow(lpSubKey), false);
+}
+
+LSTATUS WINAPI reg_unload_key_w(HKEY hKey, LPCWSTR lpSubKey)
+{
+	//return RegUnLoadKeyW(hKey, lpSubKey, lpFile);
+	return regemu::unload_key(hKey, lpSubKey, true);
 }
 
 // PASSTHROUGH

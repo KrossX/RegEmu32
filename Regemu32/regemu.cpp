@@ -323,6 +323,18 @@ namespace regemu
 		return ERROR_SUCCESS;
 	}
 
+	LSTATUS load_key(HKEY hKey, LPCWSTR lpSubKey, LPCWSTR lpFile, bool wide)
+	{
+		//WPRINTF(L"%s\n", __FUNCTIONW__);
+
+		WPRINTF(L"%s: %08X, %s, %s, %s\n", __FUNCTIONW__, hKey, lpSubKey, lpFile, wide ? L"wide" : L"ansi");
+
+		reg_key* curr_key = check_handle(hKey);
+		if (!curr_key) return ERROR_INVALID_HANDLE;
+
+		return ERROR_SUCCESS;
+	}
+
 	LSTATUS query_info_key(HKEY hKey, LPBYTE lpClass, LPDWORD lpcchClass, LPDWORD lpcSubKeys, LPDWORD lpcbMaxSubKeyLen, LPDWORD lpcbMaxClassLen, LPDWORD lpcValues, LPDWORD lpcbMaxValueNameLen, LPDWORD lpcbMaxValueLen, LPDWORD lpcbSecurityDescriptor, PFILETIME lpftLastWriteTime, bool wide)
 	{
 		WPRINTF(L"%s\n", __FUNCTIONW__);
@@ -491,6 +503,19 @@ namespace regemu
 
 
 		WPRINTF(L"%s: %08X, %s, %s, %d, %s\n", __FUNCTIONW__, hKey, lpSubKey, lpValueName, dwType, wide ? L"wide" : L"ansi");
+		return ERROR_SUCCESS;
+	}
+
+
+	LSTATUS unload_key(HKEY hKey, LPCWSTR lpSubKey, bool wide)
+	{
+		//WPRINTF(L"%s\n", __FUNCTIONW__);
+
+		WPRINTF(L"%s: %08X, %s, %s\n", __FUNCTIONW__, hKey, lpSubKey, wide ? L"wide" : L"ansi");
+
+		reg_key* curr_key = check_handle(hKey);
+		if (!curr_key) return ERROR_INVALID_HANDLE;
+
 		return ERROR_SUCCESS;
 	}
 

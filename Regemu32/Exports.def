@@ -101,7 +101,10 @@ EXPORTS
 
 		RegGetValueA        = reg_get_value_a        @1634
 		RegGetValueW        = reg_get_value_w        @1635
-		
+
+		RegLoadKeyA         = reg_load_key_a
+		RegLoadKeyW         = reg_load_key_w
+
 		RegOpenKeyA         = reg_open_key_a         @1644
 		RegOpenKeyExA       = reg_open_key_ex_a      @1645
 		RegOpenKeyExW       = reg_open_key_ex_w      @1646
@@ -119,3 +122,6 @@ EXPORTS
 		RegSetValueExA      = reg_set_value_ex_a     @1674
 		RegSetValueExW      = reg_set_value_ex_w     @1675
 		RegSetValueW        = reg_set_value_w        @1676
+
+		RegUnLoadKeyA       = reg_unload_key_a
+		RegUnLoadKeyW       = reg_unload_key_w
